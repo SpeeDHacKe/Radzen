@@ -1,0 +1,180 @@
+﻿@page "/datagrid-loaddata"
+@using System.Linq.Dynamic.Core
+@using RadzenBlazorDemos.Data
+@using RadzenBlazorDemos.Models.Northwind
+
+@inject NorthwindContext dbContext
+@inject LoadingService _loading
+
+<h1>DataGrid</h1>
+
+<p>This page demonstrates how to data-bind the Radzen Blazor DataGrid to custom collection via the LoadData event.</p>
+
+<RadzenExample Name="DataGridLoadData" Heading="false" Documentation="false">
+    <RadzenButton Click="@Reload"
+                  Text="Reload Data">
+    </RadzenButton>
+    <RadzenButton Click="@ShowLoading"
+                  Text="ShowLoad">
+    </RadzenButton>
+    <RadzenButton Click="@HideLoading"
+                  Text="HideLoad">
+    </RadzenButton>
+    <RadzenGrid @ref="radzGrid" Count="@count" Data="@employees" LoadData="@LoadData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="4" TItem="Employee" ColumnWidth="200px">
+        <Columns>
+            <RadzenGridColumn TItem="Employee" Property="EmployeeID" Title="Employee ID" />
+            @*<RadzenGridColumn TItem="Employee" Property="Photo" Title="Photo" Sortable="false" Filterable="false">
+                    <Template Context="data">
+                        <RadzenImage Path="@data?.Photo" />
+                    </Template>
+                </RadzenGridColumn>*@
+            <RadzenGridColumn TItem="Employee" Property="LastName" Title="Last Name" />
+            <RadzenGridColumn TItem="Employee" Property="FirstName" Title="First Name" />
+            <RadzenGridColumn TItem="Employee" Property="Title" Title="Title" />
+            <RadzenGridColumn TItem="Employee" Property="TitleOfCourtesy" Title="Title Of Courtesy" />
+            <RadzenGridColumn TItem="Employee" Property="BirthDate" Title="Birth Date">
+                <Template Context="data">
+                    @data.BirthDate.Value.ToString("dd/MM/yyyy : hh:mm:ss", new System.Globalization.CultureInfo("th-TH"))
+                </Template>
+                <FilterTemplate Context="data">
+                    <div style="padding-bottom:5px;">
+                        <KPDateRangePicker.DateRangePicker SingleDatePicker="true"
+                                                           OnRangeSelect="OnRangeSelect"
+                                                           @bind-StartDate="StartDate"
+                                                           IsMonthEnable="false"
+                                                           @bind-EndDate="EndDate"
+                                                           LinkedCalendars="false"
+                                                           MaxSpan="maxSpan"
+                                                           MinDate="minDate"
+                                                           MaxDate="maxDate"
+                                                           Culture="@(System.Globalization.CultureInfo.GetCultureInfo("th-TH"))"
+                                                           AutoAdjustCalendars="true"
+                                                           TodayText="วันนี้"
+                                                           ShowDropdowns="true">
+
+                            <PickerTemplate>
+                                <div id="@context.ParentId" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: 5px 10px; width: 200px; border: 1px solid #ccc;">
+                                    <i class="oi oi-calendar"></i>&nbsp;
+                                    <span>@context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? "Choose dates..." : "")</span>
+                                    <i class="oi oi-chevron-bottom float-right"></i>
+                                </div>
+                            </PickerTemplate>
+                            <ButtonsTemplate>
+                                <div class="row">
+                                    <div style="width: 75%;">
+                                        <button style="width:70px;" class="ui-button ui-button-md ui-widget ui-state-default ui-corner-all btn-primary" type="button" role="button"
+                                                @onclick=@context.ClickToday>
+                                            วันนี้
+                                        </button>
+                                    </div>
+                                    <div style="width: 1%;">
+                                        <button style="width:70px;" class="ui-button ui-button-md ui-widget ui-state-default ui-corner-all btn-secondary"
+                                                @onclick="@(e => ResetClick(e, context))" type="button">
+                                            เคลียร์
+                                        </button>
+                                    </div>
+                                </div>
+                            </ButtonsTemplate>
+                        </KPDateRangePicker.DateRangePicker>
+                    </div>
+
+                </FilterTemplate>
+
+            </RadzenGridColumn>
+            @*<RadzenGridColumn TItem="Employee" Property="HireDate" Title="Hire Date">
+                    <Template Context="data">
+                        @data.HireDate.Value.ToString("dd/MM/yyyy : hh:mm:ss", new System.Globalization.CultureInfo("th-TH"))
+                    </Template>
+                </RadzenGridColumn>
+                <RadzenGridColumn TItem="Employee" Property="Address" Title="Address" />
+                <RadzenGridColumn TItem="Employee" Property="City" Title="City" />
+                <RadzenGridColumn TItem="Employee" Property="Region" Title="Region" />
+                <RadzenGridColumn TItem="Employee" Property="PostalCode" Title="Postal Code" />
+                <RadzenGridColumn TItem="Employee" Property="Country" Title="Country" />
+                <RadzenGridColumn TItem="Employee" Property="HomePhone" Title="Home Phone" />
+                <RadzenGridColumn TItem="Employee" Property="Extension" Title="Extension" />
+                <RadzenGridColumn TItem="Employee" Property="Notes" Title="Notes" />*@
+        </Columns>
+    </RadzenGrid>
+</RadzenExample>
+
+@code {
+
+    DateTimeOffset? minDate { set; get; } = DateTimeOffset.Now.AddYears(-10);
+    DateTimeOffset? maxDate { set; get; } = new DateTimeOffset(new DateTime(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 23, 59, 59));
+
+    DateTimeOffset? StartDate { get; set; } = null;
+    DateTimeOffset? EndDate { get; set; } = null;
+    TimeSpan maxSpan = DateTime.Now.AddDays(31) - DateTime.Now;
+    int count;
+    private RadzenGrid<Employee> radzGrid;
+    IEnumerable<Employee> employees;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _loading.Show();
+        await Task.Delay(1);
+
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+            _loading.Hide();
+            await Task.Delay(1);
+        }
+    }
+
+    public void ShowLoading()
+    {
+        _loading.Show();
+    }
+
+    public void HideLoading()
+    {
+        _loading.Hide();
+    }
+
+
+    async Task LoadData(LoadDataArgs args)
+    {
+        var query = dbContext.Employees.AsQueryable();
+
+        if (!string.IsNullOrEmpty(args.Filter))
+        {
+            query = query.Where(args.Filter);
+        }
+
+        if (!string.IsNullOrEmpty(args.OrderBy))
+        {
+            query = query.OrderBy(args.OrderBy);
+        }
+
+        employees = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
+
+        count = dbContext.Employees.Count();
+
+        await InvokeAsync(StateHasChanged);
+    }
+
+    async Task Reload()
+    {
+        radzGrid.FirstPage();
+        await radzGrid.Reload();
+    }
+
+    public void OnRangeSelect(KPDateRangePicker.DateRange range)
+    {
+        Console.WriteLine($"Range {StartDate} - {EndDate} selected");
+    }
+
+    private async Task ResetClick(MouseEventArgs e, DateRangePicker picker)
+    {
+        StartDate = null;
+        EndDate = null;
+        picker.Close();
+        await InvokeAsync(StateHasChanged);
+    }
+}

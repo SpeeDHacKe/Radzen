@@ -1,0 +1,246 @@
+﻿@page "/daterange"
+
+@inject IJSRuntime JSRuntime
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-12">
+            <h1>DateRangePicker ASP.NET Core 3.1 hosted Blazor demo</h1>
+
+            <p>A Blazor component for choosing date ranges and dates</p>
+
+            <hr />
+            <h4>Getting Started</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker />
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker />")</code></pre>
+                </div>
+            </div>
+
+            <hr />
+            <h4>Opens="SideType.Left"</h4>
+            <div class="row">
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker Opens=\"SideType.Left\">" +
+                                             "\n</KPDateRangePicker.DateRangePicker>")</code></pre>
+                </div>
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker Opens="SideType.Left"></KPDateRangePicker.DateRangePicker>
+                </div>
+            </div>
+
+            <hr />
+            <h4>Simple Date Range Picker With an Event</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker OnRangeSelect="OnRangeSelect" @bind-StartDate="StartDate" @bind-EndDate="EndDate" MaxSpan="maxSpan" LinkedCalendars="true" ShowDropdowns="true"></KPDateRangePicker.DateRangePicker>
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker OnRangeSelect=\"OnRangeSelect\"\n" +
+                                             "    @bind-StartDate=\"StartDate\" @bind-EndDate=\"EndDate\" MaxSpan=\"maxSpan\" AutoAdjustCalendars=\"false\" LinkedCalendars=\"true\" >\n</KPDateRangePicker.DateRangePicker>")</code></pre>
+                    <pre><code lang="cs">DateTimeOffset? StartDate { get; set; } = DateTime.Today.AddMonths(-1);
+DateTimeOffset? EndDate { get; set; } = DateTime.Today.AddDays(1).AddTicks(-1);
+List&lt;string&gt; events { get; set; } = new List&lt;string&gt;();</code></pre>
+                    <pre><code lang="cs">@("public void OnRangeSelect(DateRange range)\n{\n" +
+                                           "    events.Add($\"Range {range.Start} - {range.End} selected\");\n}")</code></pre>
+                </div>
+                <div class="col-12">
+                    Start: @StartDate, End: @EndDate
+                </div>
+                <div class="col-12">
+                    @if (events.Count > 0)
+                    {
+                        <label>Events:</label>}
+                    @foreach (var e in events)
+                    {
+                        <p>@e</p>}
+                </div>
+            </div>
+            <hr />
+
+            <h4>Single Date Picker</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker SingleDatePicker="true" Culture="@(System.Globalization.CultureInfo.GetCultureInfo("th-TH"))" TodayText="วันนี้">
+                        <PickerTemplate>
+                            <div id="@context.ParentId" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: 5px 10px; width: 200px; border: 1px solid #ccc;">
+                                <i class="oi oi-calendar"></i>&nbsp;
+                                <span>@context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? "Choose dates..." : "")</span>
+                                <i class="oi oi-chevron-bottom float-right"></i>
+                            </div>
+                        </PickerTemplate>
+                    </KPDateRangePicker.DateRangePicker>
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<DateRangePicker SingleDatePicker=\"true\"></DateRangePicker>")</code></pre>
+                </div>
+            </div>
+
+            @*<hr />
+            <h4>Predefined Date Ranges</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker Ranges="DateRanges"></KPDateRangePicker.DateRangePicker>
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<DateRangePicker Ranges=\"DateRanges\"></DateRangePicker>")</code></pre>
+                    <pre><code lang="cs">@("Dictionary<string, DateRange> DateRanges => new Dictionary<string, DateRange> {\n"+
+                                            "    { \"This month\", new DateRange\n"+
+                                            "        {\n"+
+                                            "            Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),\n"+
+                                            "            End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddTicks(-1)\n"+
+                                            "        }\n"+
+                                            "    }, ...\n" + 
+                                            "};")</code></pre>
+                </div>
+            </div>*@
+
+            <hr />
+            <h4>Custom markup</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker>
+                        <PickerTemplate>
+                            <div id="@context.ParentId" @onclick="context.Toggle" style="background: #fff; cursor: pointer; padding: 5px 10px; width: 250px; border: 1px solid #ccc;">
+                                <i class="oi oi-calendar"></i>&nbsp;
+                                <span>@context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? "Choose dates..." : "")</span>
+                                <i class="oi oi-chevron-bottom float-right"></i>
+                            </div>
+                        </PickerTemplate>
+                    </KPDateRangePicker.DateRangePicker>
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker>\n" +
+                "    <PickerTemplate>\n" +
+                "        <div id=\"@context.ParentId\" @onclick=\"context.Toggle\" style=\"background: #fff; cursor: pointer; padding: 5px 10px; width: 250px; border: 1px solid #ccc;\">\n" +
+                "            <i class=\"oi oi-calendar\"></i>&nbsp;\n" +
+                "            <span>@context.FormattedRange @(string.IsNullOrEmpty(context.FormattedRange) ? \"Choose dates...\" : \"\")</span>\n" +
+                "            <i class=\"oi oi-chevron-bottom float-right\"></i>\n" +
+                "        </div>\n    </PickerTemplate>\n</KPDateRangePicker.DateRangePicker>")</code></pre>
+                </div>
+            </div>
+
+            <hr />
+
+            <h4>Drops="DropsType.Up"</h4>
+            <div class="row">
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker Drops="DropsType.Up"></KPDateRangePicker.DateRangePicker>
+                </div>
+                <div class="col-8">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker Drops=\"DropsType.Up\"></KPDateRangePicker.DateRangePicker>")</code></pre>
+                </div>
+            </div>
+            <hr />
+
+            <h4>Localization</h4>
+            <div class="row">
+                <div class="col-4">
+                    <button @onclick="@ClearCalendar">Clear Calendar</button>
+                </div>
+                <div class="col-4">
+                    <label>Produces:</label>
+                    <KPDateRangePicker.DateRangePicker SingleDatePicker="true" OnRangeSelect="OnRangeSelect" @bind-StartDate="StartDate" IsMonthEnable="false" @bind-EndDate="EndDate" MinDate="minDate" MaxDate="maxDate" MaxSpan="maxSpan" LinkedCalendars="false" Culture="@(System.Globalization.CultureInfo.GetCultureInfo("th-TH"))" ShowDropdowns="true" ApplyLabel="ยืนยัน" CancelLabel="ยกเลิก" />
+                </div>
+                <div class="col-4">
+                    <label>Code:</label>
+                    <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker Culture=\"@(System.Globalization.CultureInfo.GetCultureInfo(\"th-TH\"))\" ShowDropdowns=\"true\" ApplyLabel=\"ยืนยัน\" CancelLabel=\"ยกเลิก\" />")</code></pre>
+                </div>
+                <hr />
+
+                <h4>Inline mode</h4>
+                <div class="row">
+                    <div class="col-6 col-lg-4">
+                        <label>Produces:</label>
+                        <DateRangePicker Inline="true" AutoApply="true" ShowOnlyOneCalendar="true">
+                            <PickerTemplate />
+                        </DateRangePicker>
+                    </div>
+                    <div class="col-6 col-lg-8">
+                        <label>Code:</label>
+                        <pre><code lang="html">@("<KPDateRangePicker.DateRangePicker Inline=\"true\" AutoApply=\"true\" ShowOnlyOneCalendar=\"true\">\n" +
+                "    <PickerTemplate>\n        @* Empty input template *@\n    </PickerTemplate>\n</KPDateRangePicker.DateRangePicker>")</code></pre>
+                    </div>
+                </div>
+                <hr />
+
+                <h4>Licence</h4>
+
+                <p>The MIT License (MIT)</p>
+
+                <p>Copyright (c) @DateTime.Now.Year Sergey Zaikin</p>
+
+                <p>
+                    Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+                </p>
+                <p>
+                    The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+                </p>
+                <p>
+                    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code{
+    List<string> events { get; set; } = new List<string>();
+    DateTimeOffset? minDate { set; get; } = DateTimeOffset.Now.AddYears(-10);
+    DateTimeOffset? maxDate { set; get; } = new DateTimeOffset(new DateTime(DateTimeOffset.Now.Year, DateTimeOffset.Now.Month, DateTimeOffset.Now.Day, 23, 59, 59));
+
+    //Dictionary<string, DateRange> DateRanges => new Dictionary<string, DateRange> {
+    //        { "This month", new DateRange
+    //            {
+    //                Start = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1),
+    //                End = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1).AddMonths(1).AddTicks(-1)
+    //            }
+    //        } ,
+    //        { "Previous month" , new DateRange
+    //            {
+    //                Start = new DateTime(DateTime.Now.AddMonths(-1).Year, DateTime.Now.AddMonths(-1).Month, 1),
+    //                End = new DateTime(DateTime.Now.AddMonths(-1).Year, DateTime.Now.AddMonths(-1).Month, 1).AddMonths(1).AddTicks(-1)
+    //            }
+    //        }
+    // };
+
+    DateTimeOffset? StartDate { get; set; } = DateTime.Now;
+    DateTimeOffset? EndDate { get; set; } = DateTime.Now;
+    TimeSpan maxSpan = DateTime.Now.AddDays(31) - DateTime.Now;
+
+    public void OnRangeSelect(KPDateRangePicker.DateRange range)
+    {
+        events.Add($"Range {StartDate} - {EndDate} selected");
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeAsync<object>("highlightInterop.highlight");
+        await base.OnAfterRenderAsync(firstRender);
+    }
+
+    private void ClearCalendar()
+    {
+        this.StartDate = null;
+        this.EndDate = null;
+        StateHasChanged();
+    }
+}

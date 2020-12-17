@@ -1,0 +1,40 @@
+@inject LoadingService _service
+
+<div class="loader" style="display:@Display">
+    <svg class="loader-circular">
+        <circle class="loader-path" cx="25" cy="25" r="15" fill="none" stroke-width="4" stroke-miterlimit="10">
+        </circle>
+    </svg>
+</div>
+
+
+
+@code{
+    private string Display = "none;";
+
+    protected override void OnInitialized()
+    {
+        this._service.OnShow += (() => ShowLoading());
+        this._service.OnHide += (() => HideLoading());
+
+        base.OnInitialized();
+    }
+
+    public void ShowLoading()
+    {
+        Display = "block;";
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void HideLoading()
+    {
+        Display = "none;";
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        this._service.OnShow -= (() => ShowLoading());
+        this._service.OnHide -= (() => HideLoading());
+    }
+}
