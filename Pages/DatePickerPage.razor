@@ -54,11 +54,24 @@
 
     protected override Task OnInitializedAsync()
     {
+        _loading.Show();
+        Task.Delay(1);
         StartYear = DateTimeOffset.Now.AddYears(-10).ToString("yyyy");
         EndYear = DateTimeOffset.Now.ToString("yyyy");
         YearRange = string.Format("{0}:{1}", Convert.ToInt32(StartYear) - 543, Convert.ToInt32(EndYear) - 543);
         StateHasChanged();
         return base.OnInitializedAsync();
+    }
+
+    protected override Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
+            _loading.Hide();
+            Task.Delay(1);
+        }
+        return base.OnAfterRenderAsync(firstRender);
     }
 
     void OnChange(DateTime? value, string name, string format)

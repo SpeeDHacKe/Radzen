@@ -1,7 +1,7 @@
 .loader {
     width: 56px;
     height: 56px;
-    position: absolute;
+    position: fixed;
     top: calc(50% - 28px);
     left: calc(50% - 28px);
     z-index: 10000;
