@@ -20,7 +20,7 @@
     <RadzenButton Click="@HideLoading"
                   Text="HideLoad">
     </RadzenButton>
-    <RadzenGrid @ref="radzGrid" Count="@count" Data="@employees" LoadData="@LoadData" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="4" TItem="Employee" ColumnWidth="200px">
+    <RadzenGrid @ref="radzGrid" Count="@count" Data="@employees" LoadData="@LoadData" Render="(async(a) => await OnGridRender(a))" AllowSorting="true" AllowFiltering="true" AllowPaging="true" PageSize="4" TItem="Employee" ColumnWidth="200px">
         <Columns>
             <RadzenGridColumn TItem="Employee" Property="EmployeeID" Title="Employee ID" />
             @*<RadzenGridColumn TItem="Employee" Property="Photo" Title="Photo" Sortable="false" Filterable="false">
@@ -121,8 +121,7 @@
     {
         if (firstRender)
         {
-            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(10));
-            _loading.Hide();
+            System.Threading.Thread.Sleep(TimeSpan.FromSeconds(4));
             await Task.Delay(1);
         }
     }
@@ -176,5 +175,14 @@
         EndDate = null;
         picker.Close();
         await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnGridRender(GridRenderEventArgs<Employee> args)
+    {
+        if (args.FirstRender)
+        {
+            _loading.Hide();
+            await Task.Delay(1);
+        }
     }
 }

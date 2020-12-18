@@ -30,8 +30,6 @@
     animation: rotate 2s linear infinite;
     height: 50px;
     width: 50px;
-    padding: 0.4px;
-    margin: 0.7px;
     border-radius: 50%;
 }
 
