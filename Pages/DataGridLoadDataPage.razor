@@ -38,7 +38,7 @@
                 </Template>
                 <FilterTemplate Context="data">
                     <div style="padding-bottom:5px;">
-                        <KPDateRangePicker.DateRangePicker SingleDatePicker="true"
+                        <KPDateRangePicker.DateRangePicker SingleDatePicker="false"
                                                            OnRangeSelect="OnRangeSelect"
                                                            @bind-StartDate="StartDate"
                                                            IsMonthEnable="false"
@@ -59,7 +59,7 @@
                                     <i class="oi oi-chevron-bottom float-right"></i>
                                 </div>
                             </PickerTemplate>
-                            <ButtonsTemplate>
+                            @*<ButtonsTemplate>
                                 <div class="row">
                                     <div style="width: 75%;">
                                         <button style="width:70px;" class="ui-button ui-button-md ui-widget ui-state-default ui-corner-all btn-primary" type="button" role="button"
@@ -74,7 +74,7 @@
                                         </button>
                                     </div>
                                 </div>
-                            </ButtonsTemplate>
+                            </ButtonsTemplate>*@
                         </KPDateRangePicker.DateRangePicker>
                     </div>
 
@@ -139,6 +139,8 @@
 
     async Task LoadData(LoadDataArgs args)
     {
+        var xx = StartDate;
+        var yyy = EndDate;
         var query = dbContext.Employees.AsQueryable();
 
         if (!string.IsNullOrEmpty(args.Filter))
@@ -153,7 +155,7 @@
 
         employees = query.Skip(args.Skip.Value).Take(args.Top.Value).ToList();
 
-        count = dbContext.Employees.Count();
+        count = (!string.IsNullOrEmpty(args.Filter) ? query.Count() : dbContext.Employees.Count());
 
         await InvokeAsync(StateHasChanged);
     }
@@ -166,6 +168,7 @@
 
     public void OnRangeSelect(KPDateRangePicker.DateRange range)
     {
+        radzGrid.Reload();
         Console.WriteLine($"Range {StartDate} - {EndDate} selected");
     }
 
