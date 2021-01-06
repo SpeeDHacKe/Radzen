@@ -11,7 +11,7 @@
         <div class="col-xl-6">
         <RadzenTabs Change=@OnChange style="height: 880px">
             <Tabs>
-                <RadzenTabsItem Text="Orders">
+                <RadzenTabsItem Text="Orders" @onclick="@(() => OnChangTab("Orders"))">
                     <RadzenDataList PageSize="2" WrapItems="true" AllowPaging="true" Data="@orders" TItem="Order">
                         <Template Context="order">
                             <RadzenCard Style="width:400px;">
@@ -40,7 +40,7 @@
                         </Template>
                     </RadzenDataList>
                 </RadzenTabsItem>
-                <RadzenTabsItem Text="Employee">
+                <RadzenTabsItem Text="Employee" @onclick="@(() => OnChangTab("Employee"))">
                     <RadzenGrid ColumnWidth="150px" AllowFiltering="true" AllowPaging="true" PageSize="4" AllowSorting="true" Data="@employees" TItem="Employee">
                         <Columns>
                             <RadzenGridColumn TItem="Employee" Property="EmployeeID" Title="Employee ID" />
@@ -74,7 +74,7 @@
                         </Columns>
                     </RadzenGrid>
                 </RadzenTabsItem>
-                <RadzenTabsItem Text="Customers">
+                <RadzenTabsItem Text="Customers" @onclick="@(() => OnChangTab("Customer"))">
                     <RadzenGrid ColumnWidth="150px" AllowFiltering="true" AllowPaging="true" AllowSorting="true" Data="@customers" TItem="Customer">
                         <Columns>
                             <RadzenGridColumn TItem="Customer" Property="CustomerID" Title="Customer ID" />
@@ -117,6 +117,11 @@
 
     void OnChange(int index)
     {
-        console.Log($"Tab with index {index} was selected.");
+        //console.Log($"Tab with index {index} was selected.");
+    }
+
+    void OnChangTab(string tabName)
+    {
+        console.Log($"Tab name: {tabName} was selected.");
     }
 }
